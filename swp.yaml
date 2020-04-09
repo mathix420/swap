@@ -1,5 +1,0 @@
-components:
-  setup.py: setup.py
-  src: src
-remote: git@gitlab.com:mathix420/shared-components.git
-version: 1
