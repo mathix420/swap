@@ -13,6 +13,6 @@ def get_config(config_path):
     return config
 
 
-def save_config(config):
-    with open('./swp.yaml', 'w+') as fp:
+def save_config(config, config_path):
+    with open(config_path, 'w+') as fp:
         yaml.dump(config, fp, default_flow_style=False, indent=2)
