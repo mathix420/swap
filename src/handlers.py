@@ -13,7 +13,13 @@ def check_path(item):
 def init_app(options):
     if path.exists(options.c):
         exit('Cannot override existing configuration')
-    save_config({'version': 1, 'components': {}}, options.c)
+
+    config = {'version': 1, 'components': {}}
+
+    if options.remote:
+        config['remote'] = options.remote
+
+    save_config(config, options.c)
 
 
 def push_app(options):
