@@ -4,12 +4,14 @@ from .handlers import (
     remove_component,
     pull_components,
     add_component,
+    get_component,
+    tree_view,
     init_app,
     push_app,
 )
 
 parser = argparse.ArgumentParser('swp')
-parser.add_argument('-c', metavar='PATH', type=str, help="Configuration path", default="swp.yaml")
+parser.add_argument('-c', metavar='PATH', type=str, help="Configuration path", default="swap.yaml")
 
 # SUBPARSER CONFIG
 subparser = parser.add_subparsers(
@@ -18,11 +20,16 @@ subparser = parser.add_subparsers(
 # INIT
 init = subparser.add_parser('init', help='initialize a new project')
 init.add_argument('--remote', '-r', help='git repository url')
+init.add_argument('--folder', '-f', help='subfolder path')
 init.set_defaults(handler=init_app, require_config=False)
+
+# TREE
+tree = subparser.add_parser('tree', help='show tree view of remote')
+tree.set_defaults(handler=tree_view, require_config=True)
 
 # PUSH
 push = subparser.add_parser('push', help='push components to remote')
-push.add_argument('MESSAGE', help='commit message', required=False)
+push.add_argument('MESSAGE', nargs='?', help='commit message')
 push.set_defaults(handler=push_app, require_config=True)
 
 # PULL
@@ -33,6 +40,12 @@ pull.set_defaults(handler=pull_components, require_config=True)
 add = subparser.add_parser('add', help='add component to the project')
 add.add_argument('PATH', nargs='+', help='path of the component')
 add.set_defaults(handler=add_component, require_config=True)
+
+# GET
+get = subparser.add_parser('get', help='get component locally from remote')
+get.add_argument('NAME', help='component name to get')
+get.add_argument('DEST', help='path where component should be created')
+get.set_defaults(handler=get_component, require_config=True)
 
 # REMOVE
 remove = subparser.add_parser('rm', help='remove component from the project')

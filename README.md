@@ -9,6 +9,16 @@
 pip install swp
 ```
 
+## Optionnal dependencies
+
+```bash
+# Linux
+apt install tree
+
+# MacOS
+brew install tree
+```
+
 # Usage
 
 WIP

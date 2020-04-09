@@ -1,10 +1,16 @@
 from .git import git_clone, git_pull, git_push, git_add_commit
-from .remote import get_remote_url
+from .questions import get_remote_url, get_sub_folder
 from .config import save_config
+from .tree import list_files
 
 from distutils.dir_util import copy_tree
 from shutil import copy2
 from os import path
+
+
+def get_work_dir(config):
+    folder = config['remote'].split('/')[-1].split('.')[0]
+    return path.join('/tmp', folder)
 
 
 def check_path(item):
@@ -22,46 +28,52 @@ def init_app(options):
     config = {
         'version': 1,
         'remote': get_remote_url(options),
-        # TODO: add config for this
-        'remote-directory': '.',
+        'remote-directory': get_sub_folder(options),
         'components': {},
     }
 
     save_config(config, options.c)
+    git_clone(config['remote'], get_work_dir(config))
+
+
+def tree_view(options):
+    list_files(get_work_dir(options.config))
 
 
 def push_app(options):
-    dest = '/tmp/swp_test'
+    work_dir = get_work_dir(options.config)
+    subdest = path.join(work_dir, options.config['remote-directory'])
 
-    if not path.exists(dest):
-        git_clone(options.config['remote'], dest)
+    if not path.exists(work_dir):
+        git_clone(options.config['remote'], work_dir)
     else:
-        git_pull(dest)
+        git_pull(work_dir)
 
     for name, item_path in options.config['components'].items():
         if path.isdir(item_path):
-            copy_tree(item_path, path.join(dest, name))
+            copy_tree(item_path, path.join(subdest, name))
         else:
-            copy2(item_path, path.join(dest, name))
+            copy2(item_path, path.join(subdest, name))
 
-    git_add_commit(dest, options.MESSAGE or None)
-    git_push(dest)
+    git_add_commit(work_dir, options.MESSAGE or None)
+    git_push(work_dir)
 
 
 def pull_components(options):
     # TODO: Detect unvalidated changes in git and ask if it's ok
-    dest = '/tmp/swp_test'
+    work_dir = get_work_dir(options.config)
+    subdest = path.join(work_dir, options.config['remote-directory'])
 
-    if not path.exists(dest):
-        git_clone(options.config['remote'], dest)
+    if not path.exists(work_dir):
+        git_clone(options.config['remote'], work_dir)
     else:
-        git_pull(dest)
+        git_pull(work_dir)
 
     for name, item_path in options.config['components'].items():
-        if path.isdir(item_path):
-            copy_tree(path.join(dest, name), item_path)
+        if path.isdir(path.join(subdest, name)):
+            copy_tree(path.join(subdest, name), item_path)
         else:
-            copy2(path.join(dest, name), item_path)
+            copy2(path.join(subdest, name), item_path)
 
 
 def add_component(options):
@@ -73,6 +85,27 @@ def add_component(options):
         else:
             print('Cannot add 2 component with the same name')
     save_config(options.config, options.c)
+
+
+def get_component(options):
+    work_dir = get_work_dir(options.config)
+    subdest = path.join(work_dir, options.config['remote-directory'])
+    name = options.NAME
+    dest = options.DEST
+
+    if not path.exists(work_dir):
+        git_clone(options.config['remote'], work_dir)
+    else:
+        git_pull(work_dir)
+
+    if path.exists(dest):
+        exit(f'This path already exists {dest}')
+    if not path.exists(path.join(subdest, name)):
+        exit(f'No components found for this name {name}')
+    if path.isdir(path.join(subdest, name)):
+        copy_tree(path.join(subdest, name), dest)
+    else:
+        copy2(path.join(subdest, name), dest)
 
 
 def remove_component(options):

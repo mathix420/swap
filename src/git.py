@@ -20,4 +20,4 @@ def git_push(dest):
 def git_add_commit(dest, message=None):
     subprocess.check_output(f'git -C {dest} add --all', **OPTIONS)
     message = message or f'[UPDATE] {datetime.now()}'
-    subprocess.check_output(f'git -C {dest} commit -m {message}', **OPTIONS)
+    subprocess.check_output(f'git -C {dest} commit -m "{message}"', **OPTIONS)
