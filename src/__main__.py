@@ -2,6 +2,7 @@ import argparse
 from .config import get_config
 from .handlers import (
     remove_component,
+    pull_components,
     add_component,
     init_app,
     push_app,
@@ -21,6 +22,10 @@ init.set_defaults(handler=init_app, require_config=False)
 # PUSH
 push = subparser.add_parser('push', help='push components to remote')
 push.set_defaults(handler=push_app, require_config=True)
+
+# PULL
+pull = subparser.add_parser('pull', help='pull components from remote')
+pull.set_defaults(handler=pull_components, require_config=True)
 
 # ADD
 add = subparser.add_parser('add', help='add component to the project')

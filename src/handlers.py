@@ -20,6 +20,10 @@ def push_app(options):
     pass
 
 
+def pull_components(options):
+    pass
+
+
 def add_component(options):
     for item in options.PATH:
         check_path(item)
