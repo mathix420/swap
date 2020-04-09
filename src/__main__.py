@@ -22,6 +22,7 @@ init.set_defaults(handler=init_app, require_config=False)
 
 # PUSH
 push = subparser.add_parser('push', help='push components to remote')
+push.add_argument('MESSAGE', help='commit message', required=False)
 push.set_defaults(handler=push_app, require_config=True)
 
 # PULL
