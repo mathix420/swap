@@ -24,6 +24,6 @@ setup(
         'Programming Language :: Python :: 3.9',
     ],
     install_requires=open('requirements.txt').read().split('\n'),
-    packages=find_namespace_packages(include=["src", "src.*"]),
-    entry_points={'console_scripts': ['swp=src.__main__:main']},
+    packages=find_namespace_packages(include=["swap", "swap.*"]),
+    entry_points={'console_scripts': ['swp=swap.__main__:main']},
 )
