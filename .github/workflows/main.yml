@@ -1,4 +1,4 @@
-name: PyPi deployment
+name: SWAP CI
 
 on:
   push:
