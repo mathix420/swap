@@ -37,7 +37,9 @@ def init_app(options):
 
 
 def tree_view(options):
-    list_files(get_work_dir(options.config))
+    work_dir = get_work_dir(options.config)
+    subdest = path.join(work_dir, options.config['remote-directory'])
+    list_files(subdest)
 
 
 def push_app(options):
