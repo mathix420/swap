@@ -10,7 +10,7 @@ jobs:
     name: Publish swap
     runs-on: ubuntu-latest
     steps:
-      - name: Install deps
+      - name: Installing deps
         run: |
           pip3 install --upgrade setuptools 
           pip3 install --upgrade wheel
