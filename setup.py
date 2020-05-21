@@ -2,7 +2,7 @@ from setuptools import setup, find_namespace_packages
 
 setup(
     name='swp',
-    version='0.1.2',
+    version='0.1.3',
     description='Simple components sharing tool',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
