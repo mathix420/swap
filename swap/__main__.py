@@ -58,12 +58,12 @@ def main():
 
     # Load local config
     try:
-        options.config = get_config(options.c)
+        options.template = get_config(options.c)
     except:
-        options.config = None
+        options.template = None
 
     # Check if local config is required
-    if options.require_config and not options.config:
+    if options.require_config and not options.template:
         exit('You should have init a project before running this command')
 
     # Execute the command

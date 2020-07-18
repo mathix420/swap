@@ -13,6 +13,15 @@ def git_pull(dest):
     subprocess.check_output(f'git -C {dest} pull', **OPTIONS)
 
 
+def git_checkout(dest, branch):
+    subprocess.check_output(f'git -C {dest} checkout {branch}', **OPTIONS)
+
+
+def git_porcelain(dest):
+    e = subprocess.check_output(f'git -C {dest} status --porcelain', **OPTIONS)
+    return bool(e)
+
+
 def git_push(dest):
     subprocess.check_output(f'git -C {dest} push origin master', **OPTIONS)
 

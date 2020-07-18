@@ -23,15 +23,18 @@ brew install tree
 
 swap.yaml example
 ```yaml
-components:
-  components: components/shared
-remote: git@github.com:vuejs/ui.git
-remote-directory: ./src
-version: 1
-```
-This config example will create a directory on your project called `shared` in the `components` subfolder.
+git@github.com:mathix420/pylone.git:
+    pylone_utils: utils:pylone/utils
 
-In this folder will apear all the files from the [`vuejs/ui` repository](https://github.com/vuejs/ui/tree/master/src/components).
+git@github.com:vuejs/ui.git:
+    vue_ui: components/vue_ui:src/components
+```
+
+Explanations
+```yaml
+remote_repo_url:
+    module_name: output_path:input_path@optionnal_branch_or_commit
+```
 
 
 ## Commands
@@ -43,3 +46,11 @@ In this folder will apear all the files from the [`vuejs/ui` repository](https:/
 - `swp add` Will create a new shared path.
 - `swp rm` Will delete a shared path.
 - `swp get` Will get a new path from dist repo.
+
+
+# TODO
+
+- add `.git` hooks
+- store commit hash of each module
+  - check if there is changes if not then continue
+- check remote changes
