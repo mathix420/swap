@@ -22,4 +22,3 @@ def get_remote_url(options):
         'message': 'Git remote url for saving these components',
     }
     return prompt(question)['remote']
-    

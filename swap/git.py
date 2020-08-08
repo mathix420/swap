@@ -5,6 +5,7 @@ OPTIONS = {
     'shell': True
 }
 
+
 def git_clone(remote, dest):
     subprocess.check_output(f'git clone {remote} {dest}', **OPTIONS)
 
@@ -20,6 +21,11 @@ def git_checkout(dest, branch):
 def git_porcelain(dest):
     e = subprocess.check_output(f'git -C {dest} status --porcelain', **OPTIONS)
     return bool(e)
+
+
+def git_get_hash(dest):
+    e = subprocess.check_output(f'git -C {dest} rev-parse HEAD', **OPTIONS)
+    return e.decode('utf-8').strip()
 
 
 def git_push(dest):

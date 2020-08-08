@@ -12,7 +12,9 @@ from .tree import list_files
 
 from distutils.dir_util import copy_tree
 from shutil import copy2, rmtree
+from termcolor import colored
 from os import path, makedirs
+from itertools import chain
 import tempfile
 
 def get_work_dir(remote):
@@ -69,8 +71,7 @@ def push_app(options):
 
         for _name, p in modules.items():
             out_path, in_path, commit_id = split_path(p)
-            if commit_id:
-                continue
+            if commit_id: continue
             if path.isdir(out_path):
                 rmtree(path.join(work_dir, in_path))
                 makedirs(path.join(work_dir, in_path), exist_ok=True)
@@ -84,11 +85,12 @@ def push_app(options):
         except:
             pass
 
+from .lock import check_lock
 
 def pull_components(options):
     # TODO: Multithreading
-    if git_porcelain('.'):
-        exit('Please clean your working tree.')
+    # if git_porcelain('.'):
+    #     exit('Please clean your working tree.')
     for remote, modules in options.template.items():
         work_dir = get_work_dir(remote)
 
@@ -109,6 +111,20 @@ def pull_components(options):
                 copy2(path.join(work_dir, in_path), out_path)
             if commit_id:
                 git_checkout(work_dir, 'master')
+
+
+def check(options):
+    to_check = options.NAME
+    if not to_check:
+        to_check = list(chain.from_iterable(
+            x.keys() for x in options.template.values()
+        ))
+    res = [check_lock(options, name) for name in to_check]
+    if all(res):
+        return print("All is good nothing has changed")
+    for i, r in enumerate(res):
+        if r: continue
+        print(colored(to_check[i], 'red'), 'has changed since last sync.')
 
 
 def add_component(options):

@@ -8,6 +8,7 @@ from .handlers import (
     tree_view,
     init_app,
     push_app,
+    check,
 )
 
 parser = argparse.ArgumentParser('swp')
@@ -40,6 +41,11 @@ pull.set_defaults(handler=pull_components, require_config=True)
 add = subparser.add_parser('add', help='add component to the project')
 add.add_argument('PATH', nargs='+', help='path of the component')
 add.set_defaults(handler=add_component, require_config=True)
+
+# CHECK
+add = subparser.add_parser('check', help='check if component has changed')
+add.add_argument('NAME', nargs='*', help='name of component to check')
+add.set_defaults(handler=check, require_config=True)
 
 # GET
 get = subparser.add_parser('get', help='get component locally from remote')

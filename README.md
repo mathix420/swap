@@ -24,6 +24,7 @@ brew install tree
 swap.yaml example
 ```yaml
 git@github.com:mathix420/pylone.git:
+    # name: output/input@optionnal-git-identifier 
     pylone_utils: utils:pylone/utils
 
 git@github.com:vuejs/ui.git:
