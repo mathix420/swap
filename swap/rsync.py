@@ -1,6 +1,8 @@
 import subprocess
 
-OPT = {}
+OPT = {
+    'shell': True
+}
 
 
 def rsync(source_path, dest_path, exclude_file=None, exclude_paths=None, dry_run=False):
