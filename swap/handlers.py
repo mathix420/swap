@@ -3,7 +3,6 @@ from .git import (
     git_new_branch,
     git_add_commit,
     git_porcelain,
-    git_checkout,
     git_merge,
     git_clone,
     git_pull,
@@ -17,8 +16,8 @@ from .tree import list_files
 from .rsync import rsync
 
 from distutils.dir_util import copy_tree
-from shutil import copy2, rmtree
-from os import path, makedirs
+from shutil import copy2
+from os import path
 from termcolor import colored
 from itertools import chain
 
@@ -84,7 +83,7 @@ def sync_component(options):
             if commit_id: continue
 
             if not check_lock(options, name):
-                branch = git_new_branch('.', get_hash(options, name))
+                branch = git_new_branch('.', get_hash(options, name)['local'])
                 rsync(path.join(work_dir, remote_path), local_path)
                 if not git_merge('.', git_current_branch('.'), branch):
                     print(colored(f'Merge of {name} failed!', 'red'))

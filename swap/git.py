@@ -49,7 +49,7 @@ def git_new_branch(dest, source) -> str:
     Returns new branch name
     """
 
-    ts = datetime.timestamp(datetime.utcnow())
+    ts = int(datetime.timestamp(datetime.utcnow()))
     try:
         subprocess.check_output(
             f'git -C {dest} checkout -b swap/{ts} {source}',
