@@ -1,25 +1,26 @@
 from .git import (
+    git_current_branch,
+    git_new_branch,
     git_add_commit,
-    git_checkout,
     git_porcelain,
+    git_checkout,
+    git_merge,
     git_clone,
     git_pull,
     git_push,
 )
 from .questions import get_remote_url, get_sub_folder
+from .lock import check_lock, update_lock, get_hash
 from .config import save_config
+from .utils import get_work_dir
 from .tree import list_files
+from .rsync import rsync
 
 from distutils.dir_util import copy_tree
 from shutil import copy2, rmtree
-from termcolor import colored
 from os import path, makedirs
+from termcolor import colored
 from itertools import chain
-import tempfile
-
-def get_work_dir(remote):
-    folder = remote.split('/')[-1].split('.')[0]
-    return path.join(tempfile.gettempdir(), folder)
 
 
 def split_path(string):
@@ -60,57 +61,69 @@ def tree_view(options):
     list_files(subdest)
 
 
-def push_app(options):
-    for remote, modules in options.template.items():
-        work_dir = get_work_dir(remote)
+def sync_component(options):
+    if git_porcelain('.'):
+        exit('Please clean your working tree.')
 
+    # TODO: Parallelism
+    for git_url, modules in options.template.items():
+        work_dir = get_work_dir(git_url)
+
+        # If names are given check if names are prensent in this remote
+        if options.NAME and not list(set(modules.keys()) & set(options.NAME)):
+            continue
+
+        # If path do not exist clone it from remote
         if not path.exists(work_dir):
-            git_clone(remote, work_dir)
+            git_clone(git_url, work_dir)
         else:
             git_pull(work_dir)
 
-        for _name, p in modules.items():
-            out_path, in_path, commit_id = split_path(p)
+        for name, p in modules.items():
+            local_path, remote_path, commit_id = split_path(p)
             if commit_id: continue
-            if path.isdir(out_path):
-                rmtree(path.join(work_dir, in_path))
-                makedirs(path.join(work_dir, in_path), exist_ok=True)
-                copy_tree(out_path, path.join(work_dir, in_path))
-            else:
-                copy2(out_path, path.join(work_dir, in_path))
+
+            if not check_lock(options, name):
+                branch = git_new_branch('.', get_hash(options, name))
+                rsync(path.join(work_dir, remote_path), local_path)
+                if not git_merge('.', git_current_branch('.'), branch):
+                    print(colored(f'Merge of {name} failed!', 'red'))
+                    continue
+            rsync(local_path, path.join(work_dir, remote_path))
+
+        update_lock(options, git_url)
 
         try:
-            git_add_commit(work_dir, options.MESSAGE or None)
+            git_add_commit(work_dir, options.commit_msg or None)
             git_push(work_dir)
         except:
             pass
 
-from .lock import check_lock
 
-def pull_components(options):
-    # TODO: Multithreading
-    # if git_porcelain('.'):
-    #     exit('Please clean your working tree.')
-    for remote, modules in options.template.items():
-        work_dir = get_work_dir(remote)
+# def pull_components(options):
+#     # TODO: Multithreading
+#     # if git_porcelain('.'):
+#     #     exit('Please clean your working tree.')
+#     for remote, modules in options.template.items():
+#         work_dir = get_work_dir(remote)
 
-        if not path.exists(work_dir):
-            git_clone(remote, work_dir)
-        else:
-            git_pull(work_dir)
+#         if not path.exists(work_dir):
+#             git_clone(remote, work_dir)
+#         else:
+#             git_pull(work_dir)
 
-        for _name, p in modules.items():
-            out_path, in_path, commit_id = split_path(p)
-            if commit_id:
-                git_checkout(work_dir, commit_id)
-            if path.isdir(path.join(work_dir, in_path)):
-                rmtree(out_path)
-                makedirs(out_path, exist_ok=True)
-                copy_tree(path.join(work_dir, in_path), out_path)
-            else:
-                copy2(path.join(work_dir, in_path), out_path)
-            if commit_id:
-                git_checkout(work_dir, 'master')
+#         for _name, p in modules.items():
+#             out_path, in_path, commit_id = split_path(p)
+#             if commit_id:
+#                 git_checkout(work_dir, commit_id)
+#             if path.isdir(path.join(work_dir, in_path)):
+#                 rmtree(out_path)
+#                 makedirs(out_path, exist_ok=True)
+#                 copy_tree(path.join(work_dir, in_path), out_path)
+#             else:
+#                 copy2(path.join(work_dir, in_path), out_path)
+#             if commit_id:
+#                 git_checkout(work_dir, 'master')
 
 
 def check(options):

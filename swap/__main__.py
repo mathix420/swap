@@ -2,17 +2,17 @@ import argparse
 from .config import get_config
 from .handlers import (
     remove_component,
-    pull_components,
+    sync_component,
     add_component,
     get_component,
     tree_view,
     init_app,
-    push_app,
     check,
 )
 
 parser = argparse.ArgumentParser('swp')
 parser.add_argument('-c', metavar='PATH', type=str, help="Configuration path", default="swap.yaml")
+parser.add_argument('-l', metavar='PATH', type=str, help="Lockfile path", default="swap.lock")
 
 # SUBPARSER CONFIG
 subparser = parser.add_subparsers(
@@ -28,14 +28,12 @@ init.set_defaults(handler=init_app, require_config=False)
 tree = subparser.add_parser('tree', help='show tree view of remote')
 tree.set_defaults(handler=tree_view, require_config=True)
 
-# PUSH
-push = subparser.add_parser('push', help='push components to remote')
-push.add_argument('MESSAGE', nargs='?', help='commit message')
-push.set_defaults(handler=push_app, require_config=True)
-
-# PULL
-pull = subparser.add_parser('pull', help='pull components from remote')
-pull.set_defaults(handler=pull_components, require_config=True)
+# SYNC
+sync = subparser.add_parser('sync', help='sync components')
+sync.add_argument('NAME', nargs='*', help='component(s) to sync')
+sync.add_argument('-m', '--commit-msg', help='commit message')
+sync.add_argument('-f', '--force', help='force pushing updates')
+sync.set_defaults(handler=sync_component, require_config=True)
 
 # ADD
 add = subparser.add_parser('add', help='add component to the project')

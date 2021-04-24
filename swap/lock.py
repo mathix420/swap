@@ -1,57 +1,57 @@
-import json
+from .utils import get_work_dir
 from .git import git_get_hash
-from os.path import join, isdir
-from collections import ChainMap
-from subprocess import check_output
+
+import json
 
 
-def get_current_hash(path):
-    if isdir(path):
-        e = check_output(
-            f'find -s {path} -type f -exec md5sum {{}} \\; | md5sum', shell=True)
-    else:
-        e = check_output(f'md5sum {path}', shell=True)
-    return e.decode('utf-8').split(' ')[0]
+LOCKFILE_SAV = dict()
 
 
-def get_lock(name):
-    try:
-        with open('swap-lock.json') as fp:
-            return json.load(fp)
-    except IOError as e:
-        if e.errno != 2:
-            raise e
-        return {}
+def load_lockfile(options) -> "dict[str, str]":
+    if not LOCKFILE_SAV:
+        try:
+            with open(options.l) as fp:
+                LOCKFILE_SAV = json.load(fp)
+        except IOError as e:
+            if e.errno != 2:
+                raise e
+            LOCKFILE_SAV = {
+                "0": 'Auto-generated file, do not edit nor delete!',
+                "1": 'This file should be present in your version control system.'
+            }
+
+    return LOCKFILE_SAV
 
 
-def get_hashes(options, name):
-    for remote, values in options.template.items():
-        if not values.get(name): continue
-        path = join('/tmp/', remote.split('/')[-1].split('.')[0])
-        out, _ = values.get(name).split(':')
-
-    return {
-        'current_version': git_get_hash(path),
-        'last_hash': get_current_hash(out)
-    }
+def save_lockfile(options):
+    with open(options.l, 'w') as fp:
+        json.dump(LOCKFILE_SAV, fp, indent=4, sort_keys=True)
 
 
-def update_lock(options, name):
-    j = get_lock(name)
-    tmp = j.copy()  # save to check for changes
-
-    j[name] = get_hashes(options, name)
-
-    with open('swap-lock.json', 'w') as fp:
-        json.dump(j, fp, indent=4, sort_keys=True)
-
-    return tmp == j
+def get_hash(options, name):
+    return load_lockfile(options).get(name)
 
 
-def check_lock(options, name):
-    j = get_lock(name)
-    tmp = j.copy()  # save to check for changes
+def update_lock(options, git_url: str) -> bool:
+    has_changed = False
+    load_lockfile(options)
+    commit_hash = git_get_hash(get_work_dir(git_url))
 
-    j[name] = get_hashes(options, name)
+    for component_name in options.templates.get(git_url).keys():
+        has_changed = has_changed or (
+            LOCKFILE_SAV.get(component_name) != commit_hash
+        )
+        LOCKFILE_SAV[component_name] = commit_hash
 
-    return tmp == j
+    save_lockfile(options)
+    return has_changed
+
+
+def check_lock(options, name) -> bool:
+    load_lockfile(options)
+
+    git, _ = list(filter(lambda x: name in x[1], options.templates.items()))[0]
+
+    commit_hash = git_get_hash(get_work_dir(git))
+
+    return LOCKFILE_SAV[name] == commit_hash
