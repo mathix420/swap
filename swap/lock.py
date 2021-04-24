@@ -4,6 +4,7 @@ from .git import git_get_hash
 import json
 
 
+global LOCKFILE_SAV
 LOCKFILE_SAV = dict()
 
 
