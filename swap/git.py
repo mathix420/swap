@@ -36,7 +36,7 @@ def git_merge(path, source, dest) -> bool:
         )
         delete_branch(path, source)
     except subprocess.CalledProcessError as error:                                                                                                   
-        if 'CONFLICT' in error.output:
+        if b'CONFLICT' in error.output:
             delete_branch(path, source)
             return False
         raise error

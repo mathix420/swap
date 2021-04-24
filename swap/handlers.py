@@ -64,6 +64,8 @@ def sync_component(options):
     if git_porcelain('.'):
         exit('Please clean your working tree.')
 
+    original_branch = git_current_branch('.')
+
     # TODO: Parallelism
     for git_url, modules in options.template.items():
         work_dir = get_work_dir(git_url)
@@ -85,7 +87,7 @@ def sync_component(options):
             if not check_lock(options, name):
                 branch = git_new_branch('.', get_hash(options, name)['local'])
                 rsync(path.join(work_dir, remote_path), local_path)
-                if not git_merge('.', git_current_branch('.'), branch):
+                if not git_merge('.', branch, original_branch):
                     print(colored(f'Merge of {name} failed!', 'red'))
                     continue
             rsync(local_path, path.join(work_dir, remote_path))
