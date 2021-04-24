@@ -38,7 +38,7 @@ def update_lock(options, git_url: str) -> bool:
     load_lockfile(options)
     commit_hash = git_get_hash(get_work_dir(git_url))
 
-    for component_name in options.templates.get(git_url).keys():
+    for component_name in options.template.get(git_url).keys():
         has_changed = has_changed or (
             globals()['LOCKFILE_SAV'].get(component_name) != commit_hash
         )
@@ -51,7 +51,7 @@ def update_lock(options, git_url: str) -> bool:
 def check_lock(options, name) -> bool:
     load_lockfile(options)
 
-    git, _ = list(filter(lambda x: name in x[1], options.templates.items()))[0]
+    git, _ = list(filter(lambda x: name in x[1], options.template.items()))[0]
 
     commit_hash = git_get_hash(get_work_dir(git))
 
