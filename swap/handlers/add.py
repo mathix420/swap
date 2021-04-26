@@ -13,6 +13,9 @@ def add_component(options: Namespace):
     local_path = options.DEST or path.normpath(options.PATH)
     name = options.name or path.basename(local_path)
 
+    if not options.REMOTE in options.template:
+        options.template[options.REMOTE] = {}
+
     if name not in options.template[options.REMOTE]:
         options.template[options.REMOTE][name] = local_path + ':' + \
             path.normpath(options.PATH)
