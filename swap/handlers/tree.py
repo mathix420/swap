@@ -1,4 +1,4 @@
-from swap.utils import get_work_dir
+from swap.utils import get_remote_path
 
 from argparse import Namespace
 from os import path, walk, sep
@@ -22,6 +22,7 @@ def list_files(startpath):
 
 
 def tree_view(options: Namespace):
-    work_dir = get_work_dir(options.template)
-    subdest = path.join(work_dir, options.template['remote-directory'])
-    list_files(subdest)
+    for remote in options.template.keys():
+        print(f'{remote}:\n')
+        work_dir = get_remote_path(remote)
+        list_files(work_dir)

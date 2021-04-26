@@ -24,7 +24,7 @@ init.add_argument('--folder', '-f', help='subfolder path')
 init.set_defaults(handler=init_app, require_config=False)
 
 # TREE
-tree = subparser.add_parser('tree', help='show tree view of remote')
+tree = subparser.add_parser('tree', help='show tree view of remotes')
 tree.set_defaults(handler=tree_view, require_config=True)
 
 # SYNC
