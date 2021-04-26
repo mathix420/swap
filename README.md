@@ -43,6 +43,6 @@ git@github.com:vuejs/ui.git:
 - `swp rm` Will remove the specified path from the swapfile.
 - `swp get` Will pull a module/file from a specified remote URL and add it to the swapfile.
 
-More detailed documentation is available [here](/doc/guide.md)
+**More detailed documentation is available [here](/doc/guide.md)**
 
 > As `swp sync` will push local updates to remote, I recommand you to fork repositories like `vuejs/ui` to have write rights on thems.
