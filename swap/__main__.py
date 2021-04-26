@@ -1,14 +1,13 @@
 import argparse
 from .config import get_config
-from .handlers import (
-    remove_component,
-    sync_component,
-    add_component,
-    get_component,
-    tree_view,
-    init_app,
-    check,
-)
+
+from swap.handlers.remove import remove_component
+from swap.handlers.sync import sync_component
+from swap.handlers.add import add_component
+from swap.handlers.get import get_component
+from swap.handlers.tree import tree_view
+from swap.handlers.init import init_app
+
 
 parser = argparse.ArgumentParser('swp')
 parser.add_argument('-c', metavar='PATH', type=str, help="Configuration path", default="swap.yaml")
@@ -32,29 +31,30 @@ tree.set_defaults(handler=tree_view, require_config=True)
 sync = subparser.add_parser('sync', help='sync components')
 sync.add_argument('NAME', nargs='*', help='component(s) to sync')
 sync.add_argument('-m', '--commit-msg', help='commit message')
-sync.add_argument('-f', '--force', help='force pushing updates')
+sync.add_argument('-f', '--force', action='store_true', help='force pushing updates')
 sync.set_defaults(handler=sync_component, require_config=True)
 
 # ADD
 add = subparser.add_parser('add', help='add component to the project')
-add.add_argument('PATH', nargs='+', help='path of the component')
+add.add_argument('PATH', help='path of the component')
+add.add_argument('DEST', nargs='?', help='path of the remote component')
+add.add_argument('REMOTE', help='git remote url')
+add.add_argument('-n', '--name', nargs='?', help='name of the component')
 add.set_defaults(handler=add_component, require_config=True)
-
-# CHECK
-add = subparser.add_parser('check', help='check if component has changed')
-add.add_argument('NAME', nargs='*', help='name of component to check')
-add.set_defaults(handler=check, require_config=True)
 
 # GET
 get = subparser.add_parser('get', help='get component locally from remote')
-get.add_argument('NAME', help='component name to get')
-get.add_argument('DEST', help='path where component should be created')
+get.add_argument('PATH', help='remote path of the component')
+get.add_argument('DEST', nargs='?', help='local path of the component')
+get.add_argument('REMOTE', help='git remote url')
+get.add_argument('-n', '--name', nargs='?', help='name of the component')
 get.set_defaults(handler=get_component, require_config=True)
 
 # REMOVE
 remove = subparser.add_parser('rm', help='remove component from the project')
-remove.add_argument('PATH', nargs='+', help='path of the component')
+remove.add_argument('NAME', help='path of the component')
 remove.set_defaults(handler=remove_component, require_config=True)
+
 
 def main():
     # Parse arguments

@@ -8,10 +8,6 @@ global LOCKFILE
 LOCKFILE = dict()
 
 
-# CRITICAL:
-# We should create only one branch for all changes at each sync run
-
-
 def load_lockfile(options) -> "dict[str, dict[str, str]]":
     if not globals()['LOCKFILE']:
         try:
@@ -33,8 +29,8 @@ def save_lockfile(options):
         json.dump(globals()['LOCKFILE'], fp, indent=4, sort_keys=True)
 
 
-def get_hash(options, name: str) -> "dict[str, str] | None":
-    return load_lockfile(options).get(name)
+def get_hash(options, name: str) -> "dict[str, str]":
+    return load_lockfile(options).get(name, {})
 
 
 def update_lock(options, git_url: str) -> bool:
@@ -44,13 +40,15 @@ def update_lock(options, git_url: str) -> bool:
     local_commit = git_get_hash('.')
 
     for component_name in options.template.get(git_url).keys():
-        has_changed = has_changed or (
-            globals()['LOCKFILE'].get(component_name, {}).get('remote') != commit_hash
-        )
-        globals()['LOCKFILE'][component_name] = {
-            'remote': commit_hash,
-            'local': local_commit
-        }
+        current = (globals()['LOCKFILE'].get(
+            component_name, {}).get('remote') != commit_hash)
+        has_changed = has_changed or current
+
+        if current:
+            globals()['LOCKFILE'][component_name] = {
+                'remote': commit_hash,
+                'local': local_commit
+            }
 
     save_lockfile(options)
     return has_changed
@@ -63,4 +61,4 @@ def check_lock(options, name) -> bool:
 
     commit_hash = git_get_hash(get_work_dir(git))
 
-    return globals()['LOCKFILE'][name]['remote'] == commit_hash
+    return globals()['LOCKFILE'].get(name, {}).get('remote') == commit_hash

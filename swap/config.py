@@ -1,7 +1,6 @@
 from re import compile
 from os import path
 import yaml
-import json
 
 variables = compile(r'\s(\$[A-Z_]+)\s')
 

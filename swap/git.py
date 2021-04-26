@@ -19,28 +19,35 @@ def git_checkout(dest, branch, source=None):
 
 
 def delete_branch(dest, branch):
-    subprocess.check_output(f'git -C {dest} branch -d {branch}', **OPTIONS)
+    subprocess.check_output(f'git -C {dest} branch -D {branch}', **OPTIONS)
 
 
-def git_merge(path, source, dest) -> bool:
+def git_merge(path, source, dest, msg=None) -> bool:
     """
     Returns True if merge succeeded, False if conflicted.
     """
+
+    commit_msg = msg or f'[SWAP] SYNC {datetime.utcnow()}'
 
     git_checkout(path, dest)
 
     try:
         subprocess.check_output(
-            f'LC_ALL=en_US git -C {path} merge {source}',
+            f'LC_ALL=en_US git -C {path} merge {source} --squash',
             **OPTIONS
         )
-        delete_branch(path, source)
-    except subprocess.CalledProcessError as error:                                                                                                   
+    except subprocess.CalledProcessError as error:
         if b'CONFLICT' in error.output:
             delete_branch(path, source)
             return False
-        raise error
+        exit(error)
 
+    try:
+        git_add_commit(dest, commit_msg)
+    except:
+        pass
+
+    delete_branch(path, source)
     return True
 
 
@@ -56,7 +63,7 @@ def git_new_branch(dest, source) -> str:
             **OPTIONS
         )
     except subprocess.CalledProcessError:
-        raise Exception('Cannot create a new branch!')
+        exit('Cannot create a new branch!')
     return f'swap/{ts}'
 
 
@@ -66,7 +73,10 @@ def git_porcelain(dest):
 
 
 def git_current_branch(dest):
-    e = subprocess.check_output(f'git -C {dest} branch --show-current', **OPTIONS)
+    e = subprocess.check_output(
+        f'git -C {dest} branch --show-current',
+        **OPTIONS
+    )
     return e.decode('utf-8').strip()
 
 
