@@ -19,8 +19,6 @@ subparser = parser.add_subparsers(
 
 # INIT
 init = subparser.add_parser('init', help='initialize a new project')
-init.add_argument('--remote', '-r', help='git repository url')
-init.add_argument('--folder', '-f', help='subfolder path')
 init.set_defaults(handler=init_app, require_config=False)
 
 # TREE

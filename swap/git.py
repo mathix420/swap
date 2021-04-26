@@ -93,3 +93,16 @@ def git_add_commit(dest, message=None):
     subprocess.check_output(f'git -C {dest} add --all', **OPTIONS)
     message = message or f'[SWAP] SYNC {datetime.utcnow()}'
     subprocess.check_output(f'git -C {dest} commit -m "{message}"', **OPTIONS)
+
+
+def has_git(path):
+    try:
+        subprocess.check_output(f'git -C {path} status', **OPTIONS)
+    except subprocess.CalledProcessError as e:
+        # if e.returncode == 128:
+        return False
+    return True
+
+
+def init_git(path):
+    subprocess.check_output(f'git init {path}', **OPTIONS)

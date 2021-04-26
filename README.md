@@ -19,39 +19,30 @@ apt install tree
 brew install tree
 ```
 
-# Usage
+# Documentation
 
-swap.yaml example
+## Swapfile
+
+`swap.yaml` example:
 ```yaml
 git@github.com:mathix420/pylone.git:
-    # name: local:remote@optionnal-git-identifier
+    # name: local_path:remote_path@optionnal_branch_or_commitID
     pylone_utils: utils:pylone/utils
 
 git@github.com:vuejs/ui.git:
     vue_ui: components/vue_ui:src/components
 ```
 
-Explanations
-```yaml
-remote_repo_url:
-    module_name: output_path:input_path@optionnal_branch_or_commit
-```
-
 
 ## Commands
 
 - `swp init` Will guide you for creating a new config file.
-- `swp tree` Will show you the path structure of the repo.
-- `swp pull` Will git pull the remote repository and apply the config to copy files into your project.
-- `swp push` Will commit and push the changes you made on all **swapped files/folders**, we recommand you to Fork repositories like `vuejs/ui` to have write rights.
-- `swp add` Will create a new shared path.
-- `swp rm` Will delete a shared path.
-- `swp get` Will get a new path from dist repo.
+- `swp tree` Will show you the path structure of remotes.
+- `swp sync` Will by directionnal update of tracked modules/files.
+- `swp add` Will add the specified path to the swapfile.
+- `swp rm` Will remove the specified path from the swapfile.
+- `swp get` Will pull a module/file from a specified remote URL and add it to the swapfile.
 
+More detailed documentation is available [here](/doc/guide.md)
 
-# TODO
-
-- add `.git` hooks
-- store commit hash of each module
-  - check if there is changes if not then continue
-- check remote changes
+> As `swp sync` will push local updates to remote, I recommand you to fork repositories like `vuejs/ui` to have write rights on thems.

@@ -17,7 +17,7 @@ from swap.git import (
 )
 
 
-def sync_component(options: Namespace, skip_checks=False):
+def sync_component(options: Namespace, skip_checks=False, no_commit=False):
     if not skip_checks and git_porcelain('.'):
         exit('Please clean your working tree.')
 
@@ -43,17 +43,20 @@ def sync_component(options: Namespace, skip_checks=False):
                 continue
 
             if not check_lock(options, name) and not options.force:
-                source_branch = get_hash(options, name).get('local') or original_branch
-                branch = git_new_branch('.', source_branch)
-                rsync(path.join(work_dir, remote_path), local_path, require_source=True)
-                try:
-                    git_add_commit('.', None)
-                except:
-                    pass
-                if not git_merge('.', branch, original_branch):
-                    print(colored(f'Merge of {name} failed!', 'red'))
-                    print(colored('Fix merge conflicts then run `swp sync -f`', 'red'))
-                    continue
+                if no_commit:
+                    rsync(path.join(work_dir, remote_path), local_path, require_source=True)
+                else:
+                    source_branch = get_hash(options, name).get('local') or original_branch
+                    branch = git_new_branch('.', source_branch)
+                    rsync(path.join(work_dir, remote_path), local_path, require_source=True)
+                    try:
+                        git_add_commit('.', None)
+                    except:
+                        pass
+                    if not git_merge('.', branch, original_branch):
+                        print(colored(f'Merge of {name} failed!', 'red'))
+                        print(colored('Fix merge conflicts then run `swp sync -f`', 'red'))
+                        continue
             rsync(local_path, path.join(work_dir, remote_path))
 
         update_lock(options, git_url)
@@ -64,7 +67,8 @@ def sync_component(options: Namespace, skip_checks=False):
         except:
             pass
 
-    try:
-        git_add_commit('.', options.commit_msg or None)
-    except:
-        pass
+    if not no_commit:
+        try:
+            git_add_commit('.', options.commit_msg or None)
+        except:
+            pass
