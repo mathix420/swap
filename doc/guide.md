@@ -6,7 +6,7 @@
 > running the `swp init` command!
 
 
-# `SWP SYNC`
+## `SWP SYNC`
 
 ```yaml
 usage: swp sync [-h] [-m COMMIT_MSG] [-f] [NAME [NAME ...]]
@@ -34,7 +34,7 @@ to the remote, you can also run `swp sync` to automatically
 update the remote version of this file.
 
 
-# `SWP ADD`
+## `SWP ADD`
 
 ```yaml
 usage: swp add [-h] [-n [NAME]] PATH [DEST] REMOTE
@@ -72,7 +72,7 @@ git@github.com:example/test.git:
 ```
 
 
-# `SWP GET`
+## `SWP GET`
 
 ```yaml
 usage: swp get [-h] [-n [NAME]] PATH [DEST] REMOTE
@@ -91,7 +91,7 @@ optional arguments:
 To pull an existing component from remote and sync it, you can use `swp get`. This command is working just like `swp add` but pull the file instead of pushing it to remote.
 
 
-# `SWP RM`
+## `SWP RM`
 
 ```yaml
 usage: swp rm [-h] NAME
@@ -128,7 +128,7 @@ git@github.com:example/test.git:
 ```
 
 
-# `SWP TREE`
+## `SWP TREE`
 
 ```yaml
 usage: swp tree [-h]
@@ -140,7 +140,7 @@ optional arguments:
 With this command you can view all files in all remotes present in the swapfile.
 
 
-# `SWP INIT`
+## `SWP INIT`
 
 ```yaml
 usage: swp init [-h] [--remote REMOTE] [--folder FOLDER]
