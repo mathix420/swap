@@ -1,2 +1,4 @@
-PyInquirer>=1.0.3
 setuptools>=46.0.0
+termcolor>=1.1.0
+PyInquirer>=1.0.3
+PyYAML>=5.4.1
