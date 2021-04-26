@@ -87,7 +87,15 @@ def init_app(options: Namespace):
             quit('SWAP require a git project!')
 
     while add_component(bool(config)):
-        config[get_remote_url()] = f'{get_path()}:{get_path(False)}'
+        local_path = get_path()
+        remote_path = get_path(False)
+        remote_url = get_remote_url()
+        name = path.basename(local_path)
+
+        if not remote_url in config:
+            config[remote_url] = {name: f'{local_path}:{remote_path}'}
+        else:
+            config[remote_url][name] = f'{local_path}:{remote_path}'
 
     if not config and get_demo():
         with open(options.c, 'w+') as fp:

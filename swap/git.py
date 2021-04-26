@@ -1,5 +1,6 @@
 from datetime import datetime
 import subprocess
+from sys import stdout
 
 OPTIONS = {
     'shell': True
@@ -14,8 +15,13 @@ def git_pull(dest):
     subprocess.check_output(f'git -C {dest} pull', **OPTIONS)
 
 
-def git_checkout(dest, branch, source=None):
-    subprocess.check_output(f'git -C {dest} checkout {branch}', **OPTIONS)
+def git_checkout(dest, branch):
+    subprocess.check_output(
+        f'git -C {dest} checkout {branch}',
+        **{
+            'stderr': subprocess.PIPE,
+            **OPTIONS
+        })
 
 
 def delete_branch(dest, branch):

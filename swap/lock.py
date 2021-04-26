@@ -39,16 +39,24 @@ def update_lock(options, git_url: str) -> bool:
     commit_hash = git_get_hash(get_work_dir(git_url))
     local_commit = git_get_hash('.')
 
-    for component_name in options.template.get(git_url).keys():
+    for name, value in options.template.get(git_url).items():
+        commit_id = value.split('@')[-1]
+
+        if '@' in value:
+            commit_hash = commit_id
+
         current = (globals()['LOCKFILE'].get(
-            component_name, {}).get('remote') != commit_hash)
+            name, {}).get('remote') != commit_hash)
         has_changed = has_changed or current
 
         if current:
-            globals()['LOCKFILE'][component_name] = {
+            globals()['LOCKFILE'][name] = {
                 'remote': commit_hash,
                 'local': local_commit
             }
+
+        if '@' in value:
+            commit_hash = git_get_hash(get_work_dir(git_url))
 
     save_lockfile(options)
     return has_changed
