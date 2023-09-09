@@ -1,4 +1,4 @@
-<p align="center"><img src="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/twitter/236/black-universal-recycling-symbol_267b.png"></p>
+<p align="center"><img height="120px" width="120px" src="docs/logo.png"></p>
 <h1 align="center">SWAP</h1>
 <h3 align="center">Simple components sharing tool</h3>
 
@@ -43,6 +43,6 @@ git@github.com:vuejs/ui.git:
 - `swp rm` Will remove the specified path from the swapfile.
 - `swp get` Will pull a module/file from a specified remote URL and add it to the swapfile.
 
-**More detailed documentation is available [here](/doc/guide.md)**
+**More detailed documentation is available [here](/docs/guide.md)**
 
 > As `swp sync` will push local updates to remote, I recommand you to fork repositories like `vuejs/ui` to have write rights on thems.

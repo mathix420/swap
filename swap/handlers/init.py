@@ -12,12 +12,12 @@ demo = '''\
 # Here is the remote url (can be anything as long as git can handle it)
 https://github.com/mathix420/swap.git:
   # component_name: local_path:remote_path
-  example: example.md:doc/guide.md
+  example: example.md:docs/guide.md
 
 # optionnaly you can add a git identifier at the end of the remote path
 # like so:
-#  example: example.md:doc/guide.md@commit_id
-#  example: example.md:doc/guide.md@branch_name
+#  example: example.md:docs/guide.md@commit_id
+#  example: example.md:docs/guide.md@branch_name
 
 # Open the example.md file to know more about swap
 
